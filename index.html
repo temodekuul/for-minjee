@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>For Minjee</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;1,400;1,500&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: one screen. The letter is read a page at a time while the sky over an
+   autumn steppe goes from last night to this morning. Script repaints the tokens per page. */
+:root {
+  --sky: #0f1430;
+  --ink: #f3f0ff;
+  --soft: #b6b4d2;
+  --hill-far: #0b0d22;
+  --hill-near: #080a1c;
+  --sun: #ff7f5c;
+  --moon: #f3ecd2;
+  --glow: #ffc96b;
+  --font-display: "Alegreya", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: "Alegreya Sans", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --fade: 1.6s;
+  --stars: 1;
+  --moon-x: 0vw;
+  --moon-y: 0vh;
+  --moon-o: 1;
+  --sun-y: 42vh;
+  --door: 1;
+  color-scheme: dark;
+}
+html { height: 100%; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+[hidden] { display: none !important; }
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--sky);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--fade) ease, color var(--fade) ease;
+}
+
+/* The sky */
+.sky { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.stars { position: absolute; inset: 0 0 38% 0; opacity: var(--stars); transition: opacity var(--fade) ease; }
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--moon);
+  animation: twinkle var(--d, 4s) ease-in-out var(--dl, 0s) infinite alternate;
+}
+@keyframes twinkle { from { opacity: .2; } to { opacity: 1; } }
+.moon {
+  position: absolute;
+  top: 9%;
+  right: 12%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 10px -4px 0 0 var(--moon);
+  opacity: var(--moon-o);
+  transform: translate(var(--moon-x), var(--moon-y));
+  transition: transform var(--fade) ease-in-out, opacity var(--fade) ease;
+}
+.sun {
+  position: absolute;
+  left: 12%;
+  bottom: 9vh;
+  width: min(42vw, 200px);
+  aspect-ratio: 1;
+  max-width: 100%;
+  border-radius: 50%;
+  background: var(--sun);
+  transform: translateY(var(--sun-y));
+  transition: transform 2.6s cubic-bezier(.3, .6, .2, 1), background-color var(--fade) ease;
+}
+.steppe { position: absolute; left: 0; bottom: 0; width: 100%; height: 28vh; display: block; }
+.steppe .far { fill: var(--hill-far); transition: fill var(--fade) ease; }
+.steppe .near { fill: var(--hill-near); transition: fill var(--fade) ease; }
+.ger { position: absolute; right: 16%; bottom: calc(28vh * .42); width: 44px; height: auto; }
+.ger .body { fill: var(--hill-near); transition: fill var(--fade) ease; }
+.ger .door {
+  fill: var(--glow);
+  opacity: var(--door);
+  filter: drop-shadow(0 0 4px var(--glow));
+  transition: opacity var(--fade) ease;
+}
+
+/* The letter */
+.stage {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 18px 22px;
+}
+.top, .card, .controls { width: 100%; max-width: 34rem; margin-inline: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 24px; }
+.label, .reply-label {
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--soft);
+  transition: color var(--fade) ease;
+}
+.dots { display: flex; gap: 7px; }
+.dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: .3;
+  transition: opacity .4s ease, transform .4s ease, background-color var(--fade) ease;
+}
+.dots span.on { opacity: 1; transform: scale(1.35); }
+
+.card {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding-block: 28px 15vh;
+}
+.big {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.1rem, 9vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+.big:lang(mn) { font-size: clamp(2.9rem, 13vw, 4.6rem); letter-spacing: 0; }
+.small {
+  margin: 0;
+  max-width: 32ch;
+  font-size: clamp(1.12rem, 4.6vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--soft);
+  text-wrap: pretty;
+  transition: color var(--fade) ease;
+}
+.promises { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.promises li {
+  position: relative;
+  padding-left: 22px;
+  font-size: clamp(1.1rem, 4.5vw, 1.25rem);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.promises li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: .55em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--glow);
+}
+
+.choices { display: grid; gap: 10px; margin-top: 4px; }
+.choice {
+  appearance: none;
+  width: 100%;
+  min-height: 56px;
+  padding: 14px 18px;
+  text-align: left;
+  border-radius: 16px;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 40%, transparent);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--ink);
+  font: 500 1.15rem/1.3 var(--font-body);
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, transform .15s ease;
+}
+.choice:hover { background: color-mix(in srgb, var(--ink) 14%, transparent); border-color: var(--ink); }
+.choice:active { transform: scale(.98); }
+
+.reply-wrap { display: grid; gap: 8px; }
+.reply {
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  -webkit-user-select: all;
+  user-select: all;
+}
+.sig { margin: 4px 0 0; font-family: var(--font-display); font-style: italic; font-size: 1.4rem; }
+
+.controls { display: flex; gap: 10px; }
+.btn {
+  appearance: none;
+  border: 0;
+  min-height: 54px;
+  padding: 8px 24px;
+  border-radius: 999px;
+  font: 700 1.05rem/1.2 var(--font-body);
+  letter-spacing: .01em;
+  cursor: pointer;
+  transition: background-color var(--fade) ease, color var(--fade) ease, transform .15s ease;
+}
+.btn:active { transform: scale(.97); }
+.btn-go { flex: 1; background: var(--ink); color: var(--sky); }
+.btn-back {
+  background: var(--sky);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 35%, transparent);
+}
+:focus-visible { outline: 2.5px solid var(--ink); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.card > * { animation: rise .8s cubic-bezier(.2, .7, .2, 1) both; }
+.card > *:nth-child(2) { animation-delay: .15s; }
+.card > *:nth-child(3) { animation-delay: .3s; }
+.card > *:nth-child(4) { animation-delay: .45s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="sky" aria-hidden="true">
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+  <div class="sun"></div>
+  <svg class="steppe" viewBox="0 0 400 100" preserveAspectRatio="none">
+    <path class="far" d="M0 48 C60 30 130 36 190 44 C260 54 320 26 400 38 L400 100 L0 100 Z"/>
+    <path class="near" d="M0 70 C70 56 140 64 210 62 C280 60 330 50 400 60 L400 100 L0 100 Z"/>
+  </svg>
+  <svg class="ger" viewBox="0 0 44 30">
+    <rect class="body" x="29" y="3" width="2.5" height="9"/>
+    <path class="body" d="M2 14 Q22 1 42 14 Z"/>
+    <rect class="body" x="5" y="13" width="34" height="17"/>
+    <rect class="door" x="19" y="18" width="6" height="12"/>
+  </svg>
+</div>
+
+<main class="stage" id="stage">
+  <header class="top">
+    <span class="label">For Minjee</span>
+    <span class="dots" id="dots" aria-hidden="true"></span>
+    <span class="sr" id="where"></span>
+  </header>
+  <section class="card" id="card" aria-live="polite"></section>
+  <nav class="controls" aria-label="Pages">
+    <button class="btn btn-back" id="back" type="button">Back</button>
+    <button class="btn btn-go" id="go" type="button">Start</button>
+  </nav>
+</main>
+
+<script>
+(() => {
+  const NIGHT_EARTH = '#05060f';
+  const pages = [
+    { p: 0,   sky: '#0f1430', earth: NIGHT_EARTH,
+      big: "Minjee, I'm sorry.",
+      small: "A text felt too small for this, so I made you a page. It takes about a minute to read." },
+    { p: .08, sky: '#141a3b', earth: NIGHT_EARTH,
+      big: "Yesterday I said things to you that I didn't mean.",
+      small: "I've been thinking about it ever since." },
+    { p: .16, sky: '#1b1f47', earth: '#06061a',
+      big: "Not meaning them doesn't make them okay.",
+      small: "You still heard them, and they still hurt. I'm the one who said them." },
+    { p: .26, sky: '#252553', earth: '#08071c',
+      big: "You didn't deserve that.",
+      small: "Not from anyone, and least of all from me." },
+    { p: .36, sky: '#33295e', earth: '#0b081f',
+      big: "I won't make excuses.",
+      small: "I was wrong to talk to you like that. Nothing I could add would make it fine." },
+    { p: .46, sky: '#472f69', earth: '#0f0a24', lang: 'mn',
+      big: "Уучлаарай.",
+      small: "I'm sorry, Minjee. This time I mean every word." },
+    { p: .56, sky: '#5f366e', earth: '#140c27',
+      big: "Here's what I'll do from now on.",
+      list: [
+        "When I'm angry, I'll stop and take a breath before I say anything.",
+        "If I need space, I'll say so instead of saying something that hurts you.",
+        "When you tell me something hurt, I'll listen before I defend myself."
+      ],
+      small: "If I ever slip, show me this page." },
+    { p: .66, sky: '#7c3f6f', earth: '#1c0f2a',
+      big: "You don't have to forgive me today.",
+      small: "Stay at your friend's tonight, and longer if you need it. I'll be home." },
+    { p: .8,  sky: '#f0a38e', earth: '#6e3f3a', sun: '#ff7f5c',
+      big: "How are you feeling?",
+      small: "Pick whichever one is true. Any answer is okay.",
+      choices: true }
+  ];
+  const MORNING = { sky: '#fcdcab', earth: '#8a6040', sun: '#ff9a3d' };
+  const answers = {
+    yes: { p: 1, ...MORNING, label: "I forgive you",
+      big: "Thank you.",
+      small: "I won't take it for granted. I had something planned for tonight, and it'll keep until you're home.",
+      reply: "I read it. I forgive you. Save tonight's plan for me." },
+    time: { p: .84, sky: '#f4b597', earth: '#74463b', sun: '#ff8a55', label: "I need some time",
+      big: "That's fair.",
+      small: "Take as long as you need. I'll be home when you're ready.",
+      reply: "I read it. I need a little time." },
+    person: { p: 1, ...MORNING, label: "Say it to me in person",
+      big: "You're right.",
+      small: "You should hear this from me, not from a screen. When you're home, I'll say it to you properly.",
+      reply: "I read it. Say it to me when I'm home." }
+  };
+
+  const LIGHT = '#f3f0ff';
+  const DARK = '#2a1427';
+  const root = document.documentElement;
+  const $ = id => document.getElementById(id);
+  const card = $('card'), back = $('back'), go = $('go'), dots = $('dots'), where = $('where'), stage = $('stage');
+  let i = 0;
+  let answer = null;
+
+  const rgb = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
+  const hex = a => '#' + a.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+  const mix = (a, b, t) => { const B = rgb(b); return hex(rgb(a).map((v, k) => v + (B[k] - v) * t)); };
+  const lum = h => rgb(h)
+    .map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; })
+    .reduce((s, v, k) => s + v * [.2126, .7152, .0722][k], 0);
+  const contrast = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + .05) / (y + .05); };
+  const clamp = v => Math.min(1, Math.max(0, v)).toFixed(3);
+
+  function paint(page) {
+    const p = page.p;
+    const ink = contrast(LIGHT, page.sky) >= contrast(DARK, page.sky) ? LIGHT : DARK;
+    const set = (k, v) => root.style.setProperty(k, v);
+    set('--sky', page.sky);
+    set('--ink', ink);
+    set('--soft', mix(ink, page.sky, .28));
+    set('--hill-far', mix(page.sky, page.earth, .55));
+    set('--hill-near', mix(page.sky, page.earth, .8));
+    set('--sun', page.sun || '#ff7f5c');
+    set('--stars', clamp(1 - p * 1.4));
+    set('--moon-x', (p * 6).toFixed(1) + 'vw');
+    set('--moon-y', (p * 20).toFixed(1) + 'vh');
+    set('--moon-o', clamp(1 - (p - .6) * 5));
+    set('--sun-y', (p < .75 ? 42 : 12 - (p - .75) / .25 * 24).toFixed(1) + 'vh');
+    set('--door', clamp(p < .7 ? 1 : 1 - (p - .7) * 6));
+  }
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  for (let n = 0; n < pages.length; n++) dots.append(document.createElement('span'));
+
+  const stars = $('stars');
+  for (let n = 0; n < 48; n++) {
+    const s = document.createElement('span');
+    const size = (Math.random() * 1.6 + .8).toFixed(1) + 'px';
+    s.className = 'star';
+    s.style.left = (Math.random() * 100).toFixed(2) + '%';
+    s.style.top = (Math.random() * 100).toFixed(2) + '%';
+    s.style.width = size;
+    s.style.height = size;
+    s.style.setProperty('--d', (2.5 + Math.random() * 3.5).toFixed(2) + 's');
+    s.style.setProperty('--dl', '-' + (Math.random() * 5).toFixed(2) + 's');
+    stars.append(s);
+  }
+
+  function render() {
+    const page = answer ? answers[answer] : pages[i];
+    paint(page);
+
+    card.replaceChildren();
+    const h = el('h1', 'big', page.big);
+    if (page.lang) h.lang = page.lang;
+    card.append(h);
+    if (page.list) {
+      const ul = el('ul', 'promises');
+      page.list.forEach(t => ul.append(el('li', null, t)));
+      card.append(ul);
+    }
+    if (page.small) card.append(el('p', 'small', page.small));
+    if (page.choices) {
+      const wrap = el('div', 'choices');
+      for (const key of Object.keys(answers)) {
+        const b = el('button', 'choice', answers[key].label);
+        b.type = 'button';
+        b.addEventListener('click', () => { answer = key; render(); go.focus(); });
+        wrap.append(b);
+      }
+      card.append(wrap);
+    }
+    if (answer) {
+      const wrap = el('div', 'reply-wrap');
+      wrap.append(el('span', 'reply-label', 'Send me this'));
+      wrap.append(el('p', 'reply', page.reply));
+      card.append(wrap);
+      card.append(el('p', 'sig', 'Love, Temo'));
+    }
+
+    [...dots.children].forEach((d, n) => d.classList.toggle('on', n === i));
+    dots.hidden = !!answer;
+    where.textContent = answer ? '' : `Page ${i + 1} of ${pages.length}`;
+
+    back.hidden = !answer && i === 0;
+    back.textContent = answer ? 'Change answer' : 'Back';
+    go.hidden = !answer && !!page.choices;
+    go.textContent = answer ? 'Copy reply' : (i === 0 ? 'Start' : 'Next');
+    stage.scrollTop = 0;
+  }
+
+  async function copyReply() {
+    const text = answers[answer].reply;
+    try {
+      await navigator.clipboard.writeText(text);
+      go.textContent = 'Copied';
+    } catch {
+      const r = document.createRange();
+      r.selectNodeContents(card.querySelector('.reply'));
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+      go.textContent = 'Selected, copy it';
+    }
+  }
+
+  function next() {
+    if (answer) { copyReply(); return; }
+    if (i < pages.length - 1) {
+      i++;
+      render();
+      if (pages[i].choices) card.querySelector('.choice')?.focus({ preventScroll: true });
+    }
+  }
+  function prev() {
+    if (answer) answer = null;
+    else if (i > 0) i--;
+    render();
+    if (back.hidden) go.focus();
+  }
+
+  go.addEventListener('click', next);
+  back.addEventListener('click', prev);
+
+  document.addEventListener('keydown', e => {
+    if (answer || e.target.closest?.('.choice')) return;
+    if (e.key === 'ArrowRight' && !pages[i].choices) next();
+    if (e.key === 'ArrowLeft' && i > 0) prev();
+  });
+
+  let sx = null, sy = 0;
+  stage.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  stage.addEventListener('touchend', e => {
+    if (sx == null) return;
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    sx = null;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+    if (dx < 0 && !answer && !pages[i].choices) next();
+    else if (dx > 0 && !back.hidden) prev();
+  }, { passive: true });
+
+  render();
+})();
+</script>
+</body>
+</html>
