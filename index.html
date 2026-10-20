@@ -252,6 +252,7 @@ body {
 .card > *:nth-child(2) { animation-delay: .15s; }
 .card > *:nth-child(3) { animation-delay: .3s; }
 .card > *:nth-child(4) { animation-delay: .45s; }
+.card.still > * { animation: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -523,7 +524,11 @@ body {
     else if (dx > 0 && !back.hidden) prev();
   }, { passive: true });
 
+  card.classList.add('still');
   render();
+  const wake = () => card.classList.remove('still');
+  go.addEventListener('click', wake, { once: true });
+  back.addEventListener('click', wake, { once: true });
 })();
 </script>
 </body>
